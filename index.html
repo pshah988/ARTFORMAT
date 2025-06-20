@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ART Format Log</title>
+  <title>ART FORMAT</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -12,19 +12,20 @@
       transition: background-color 1s ease;
       position: relative;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .container {
       width: 70%;
-      margin: 30px auto;
+      margin: 40px auto;
       background: #fff;
       padding: 20px;
       border-radius: 16px;
       box-shadow: 0 0 20px rgba(0,0,0,0.1);
       max-height: 85vh;
       overflow-y: auto;
+      z-index: 2;
       position: relative;
-      z-index: 10;
     }
 
     h2 {
@@ -58,20 +59,9 @@
       font-weight: bold;
     }
 
-    .generate {
-      background-color: #28a745;
-      color: white;
-    }
-
-    .clear {
-      background-color: #dc3545;
-      color: white;
-    }
-
-    .copy {
-      background-color: #007bff;
-      color: white;
-    }
+    .generate { background-color: #28a745; color: white; }
+    .clear { background-color: #dc3545; color: white; }
+    .copy { background-color: #007bff; color: white; }
 
     .output {
       white-space: pre-wrap;
@@ -102,6 +92,7 @@
       color: hotpink;
     }
 
+    /* Watermark Styling */
     .watermark {
       position: fixed;
       top: 50%;
@@ -109,13 +100,13 @@
       transform: translate(-50%, -50%);
       font-size: 48px;
       font-weight: bold;
-      color: rgba(255, 0, 0, 0.15); /* red with opacity */
-      z-index: 1;
-      text-align: center;
+      color: rgba(255, 0, 0, 0.15);
+      z-index: 999;
       pointer-events: none;
       user-select: none;
       white-space: nowrap;
       letter-spacing: 4px;
+      text-align: center;
     }
   </style>
 </head>
@@ -158,42 +149,38 @@
 </div>
 
 <script>
-  const colors = ['#b3e5fc', '#ffe0f0', '#fff5cc', '#fdf6e3', '#f0e0e9', '#ffe5b4'];
-  let current = 0;
-
+  const bgColors = ['#b3e5fc', '#ffe0f0', '#fff5cc', '#fdf6e3', '#f0e0e9', '#ffe5b4', '#f2d8d8', '#ffdab9'];
+  let bgIndex = 0;
   setInterval(() => {
-    document.body.style.backgroundColor = colors[current];
-    current = (current + 1) % colors.length;
+    document.body.style.backgroundColor = bgColors[bgIndex];
+    bgIndex = (bgIndex + 1) % bgColors.length;
   }, 10000);
 
-  const watermarkPhrases = {
-    1: "FINISH STRONG. THE WEEKEND IS YOUR REWARD",
-    2: "START SMART. END STRONG",
-    3: "FOCUS AND EXECUTE TO EXCEL",
-    4: "PROGRESS, NOT PERFECTION"
-  };
-
-  let words = [];
-  let wordIndex = 0;
-  let phraseKeys = Object.keys(watermarkPhrases);
-  let currentPhraseKey = 0;
+  const phrases = [
+    "FINISH STRONG. THE WEEKEND IS YOUR REWARD",
+    "START SMART. END STRONG",
+    "FOCUS AND EXECUTE TO EXCEL",
+    "PROGRESS, NOT PERFECTION"
+  ];
+  let currentPhrase = 0;
+  let currentWord = 0;
 
   function updateWatermark() {
-    if (wordIndex >= words.length) {
+    const phrase = phrases[currentPhrase];
+    const words = phrase.split(" ");
+    if (currentWord < words.length) {
+      document.getElementById("watermark").innerText = words.slice(0, currentWord + 1).join(" ");
+      currentWord++;
+      setTimeout(updateWatermark, 400);
+    } else {
       setTimeout(() => {
-        currentPhraseKey = (currentPhraseKey + 1) % phraseKeys.length;
-        words = watermarkPhrases[phraseKeys[currentPhraseKey]].split(" ");
-        wordIndex = 0;
+        currentPhrase = (currentPhrase + 1) % phrases.length;
+        currentWord = 0;
         updateWatermark();
       }, 3000);
-    } else {
-      document.getElementById('watermark').innerText = words.slice(0, wordIndex + 1).join(" ");
-      wordIndex++;
-      setTimeout(updateWatermark, 400);
     }
   }
 
-  words = watermarkPhrases[phraseKeys[0]].split(" ");
   updateWatermark();
 
   function generateOutput() {
