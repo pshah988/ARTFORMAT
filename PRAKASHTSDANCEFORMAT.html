@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ART Format Log</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      transition: background-color 1s ease;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 70%;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    textarea {
+      width: 95%;
+      height: 70px;
+      margin-top: 4px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      resize: vertical;
+      font-size: 14px;
+    }
+
+    .button {
+      padding: 10px 20px;
+      margin: 10px 5px 10px 0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .generate {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .clear {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .copy {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .output {
+      white-space: pre-wrap;
+      background: #f0f0f0;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .signature {
+      margin-top: 20px;
+      text-align: center;
+      z-index: 10;
+      position: relative;
+    }
+
+    .signature .infosys {
+      font-size: 24px;
+      font-weight: bold;
+      color: blue;
+    }
+
+    .signature .art {
+      font-size: 14px;
+      font-weight: bold;
+      color: hotpink;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      font-weight: bold;
+      color: rgba(255, 0, 0, 0.15); /* red with opacity */
+      z-index: 1;
+      text-align: center;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      letter-spacing: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="watermark" id="watermark">START STRONG</div>
+
+<div class="container">
+  <h2>ART FORMAT</h2>
+
+  <label>T - Technical Information <button class="clear" onclick="document.getElementById('t').value=''">Clear</button></label>
+  <textarea id="t"></textarea>
+
+  <label>S - Symptoms <button class="clear" onclick="document.getElementById('s').value=''">Clear</button></label>
+  <textarea id="s"></textarea>
+
+  <label>D - Diagnostics <button class="clear" onclick="document.getElementById('d').value=''">Clear</button></label>
+  <textarea id="d"></textarea>
+
+  <label>A - Action Taken <button class="clear" onclick="document.getElementById('a').value=''">Clear</button></label>
+  <textarea id="a"></textarea>
+
+  <label>N - Next Actions <button class="clear" onclick="document.getElementById('n').value=''">Clear</button></label>
+  <textarea id="n"></textarea>
+
+  <label>C - Comments <button class="clear" onclick="document.getElementById('c').value=''">Clear</button></label>
+  <textarea id="c"></textarea>
+
+  <button class="button generate" onclick="generateOutput()">Generate</button>
+  <button class="button clear" onclick="clearAll()">Clear All</button>
+  <button class="button copy" onclick="copyOutput()">Copy</button>
+
+  <div class="output" id="output"></div>
+
+  <div class="signature">
+    <div class="infosys">INFOSYS</div>
+    <div class="art">ART</div>
+    <hr>
+  </div>
+</div>
+
+<script>
+  const colors = ['#b3e5fc', '#ffe0f0', '#fff5cc', '#fdf6e3', '#f0e0e9', '#ffe5b4'];
+  let current = 0;
+
+  setInterval(() => {
+    document.body.style.backgroundColor = colors[current];
+    current = (current + 1) % colors.length;
+  }, 10000);
+
+  const watermarkPhrases = {
+    1: "FINISH STRONG. THE WEEKEND IS YOUR REWARD",
+    2: "START SMART. END STRONG",
+    3: "FOCUS AND EXECUTE TO EXCEL",
+    4: "PROGRESS, NOT PERFECTION"
+  };
+
+  let words = [];
+  let wordIndex = 0;
+  let phraseKeys = Object.keys(watermarkPhrases);
+  let currentPhraseKey = 0;
+
+  function updateWatermark() {
+    if (wordIndex >= words.length) {
+      setTimeout(() => {
+        currentPhraseKey = (currentPhraseKey + 1) % phraseKeys.length;
+        words = watermarkPhrases[phraseKeys[currentPhraseKey]].split(" ");
+        wordIndex = 0;
+        updateWatermark();
+      }, 3000);
+    } else {
+      document.getElementById('watermark').innerText = words.slice(0, wordIndex + 1).join(" ");
+      wordIndex++;
+      setTimeout(updateWatermark, 400);
+    }
+  }
+
+  words = watermarkPhrases[phraseKeys[0]].split(" ");
+  updateWatermark();
+
+  function generateOutput() {
+    const t = document.getElementById("t").value.trim();
+    const s = document.getElementById("s").value.trim();
+    const d = document.getElementById("d").value.trim();
+    const a = document.getElementById("a").value.trim();
+    const n = document.getElementById("n").value.trim();
+    const c = document.getElementById("c").value.trim();
+    const now = new Date().toLocaleString();
+
+    const result = `Date: ${now}
+
+T - Technical Information: ${t}
+S - Symptoms: ${s}
+D - Diagnostics: ${d}
+A - Action Taken: ${a}
+N - Next Actions: ${n}
+C - Comments: ${c}
+
+---------------------------------------------------`;
+
+    document.getElementById("output").innerText = result;
+  }
+
+  function clearAll() {
+    ['t', 's', 'd', 'a', 'n', 'c'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById("output").innerText = '';
+  }
+
+  function copyOutput() {
+    const text = document.getElementById("output").innerText;
+    navigator.clipboard.writeText(text).then(() => alert("Copied!"));
+  }
+</script>
+
+</body>
+</html>
